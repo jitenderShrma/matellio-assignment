@@ -9,9 +9,20 @@ const Register = ({ show, handleClose }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [flash, setFlash] = useState({ showMessage: false, message: '', type: '' });
+  const [errors, setErrors] = useState({ email: '', password: '' });
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
+  };
+  const registrationValidate = () => {
+    const errors = {};
+    if (email && !/\S+@\S+\.\S+/.test(email)) {
+      errors.email = 'Invalid email format';
+    }
+    if (password && password.length < 5) {
+      errors.password = "Password must be at lest 5 characters";
+    }
+    return errors;
   };
 
   const handlePasswordChange = (e) => {
@@ -19,6 +30,15 @@ const Register = ({ show, handleClose }) => {
   };
   const handleSaveChanges = async () => {
     try {
+      // validate
+      const registerErrors = registrationValidate();
+      if (Object.keys(registerErrors).length > 0) {
+        setErrors(registerErrors);
+        return;
+      } else {
+        setErrors({ email: '', password: '' })
+      }
+
       const result = await register(dispatch, { email, password });
       if (result && result.status === 'success') {
         setFlash({ showMessage: true, message: 'Successfully registered', type: 'success' });
@@ -56,7 +76,9 @@ const Register = ({ show, handleClose }) => {
                 placeholder="Enter email"
                 value={email}
                 onChange={handleEmailChange}
+                className={errors.email && 'is-invalid'}
               />
+              {errors.email && <label className='invalid-feedback'>{errors.email}</label>}
             </Form.Group>
 
             <Form.Group controlId="formBasicPassword">
@@ -66,7 +88,10 @@ const Register = ({ show, handleClose }) => {
                 placeholder="Password"
                 value={password}
                 onChange={handlePasswordChange}
+                className={errors.password && 'is-invalid'}
               />
+              {errors.password && <label className='invalid-feedback'>{errors.password}</label>}
+
             </Form.Group>
           </Form>
         </Modal.Body>

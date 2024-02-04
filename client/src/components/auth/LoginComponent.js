@@ -10,6 +10,7 @@ const Login = ({ show, handleClose }) => {
   const dispatch = useDispatch();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState({email:'', password:''})
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -19,8 +20,27 @@ const Login = ({ show, handleClose }) => {
     setPassword(e.target.value);
   };
 
+  const loginValidate = () => {
+    const errors = {};
+    if(email && !/\S+@\S+\.\S+/.test(email)){
+      errors.email = 'Invalid email format';
+    }
+    if(password && password.length < 5){
+      errors.password = "Password must be at lest 5 characters";
+    }
+    return errors;
+  };
+
   const handleSaveChanges = async () => {
     try {
+      // validate
+      const loginErrors = loginValidate();
+      if(Object.keys(loginErrors).length > 0){
+        setErrors(loginErrors);
+        return;
+      } else {
+        setErrors({email:'', password:''})
+      }
       const result = await login(dispatch, { email, password });
     if (result && result.status === 'success') {
       handleClose();
@@ -57,7 +77,9 @@ const Login = ({ show, handleClose }) => {
               placeholder="Enter email"
               value={email}
               onChange={handleEmailChange}
+              className={errors.email && 'is-invalid'}
             />
+              {errors.email && <label className='invalid-feedback'>{errors.email}</label>}
           </Form.Group>
 
           <Form.Group controlId="formBasicPassword">
@@ -67,7 +89,9 @@ const Login = ({ show, handleClose }) => {
               placeholder="Password"
               value={password}
               onChange={handlePasswordChange}
+              className={errors.password && 'is-invalid'}
             />
+             {errors.password && <label className='invalid-feedback'>{errors.password}</label>}
           </Form.Group>
         </Form>
       </Modal.Body>

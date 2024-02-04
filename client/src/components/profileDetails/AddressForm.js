@@ -67,7 +67,12 @@ const AddressForm = ({addresses, setAddresses, submitted, addressValidationError
                                 disabled={submitted}
                                 placeholder="Enter ZIP code"
                                 value={address.postalCode}
-                                onChange={(e) => handleAddressChange(index, 'postalCode', e.target.value)}
+                                onChange={(e) => {
+                                    if (!/^\d*$/.test(e.target.value)) {
+                                        return;
+                                      }
+                                    handleAddressChange(index, 'postalCode', e.target.value)}
+                                }
                                 className={addressValidationErrors[index] && addressValidationErrors[index].postalCode && 'is-invalid'}
                             />
                             {addressValidationErrors[index] && addressValidationErrors[index].postalCode && <label className='invalid-feedback'>{addressValidationErrors[index].postalCode}</label>}
