@@ -6,7 +6,6 @@ import PrivateRoute from './components/PrivateRoute';
 import PersonalDetailsComponent from './components/profileDetails/MainForm';
 import HomeComponent from './components/Home';
 import Navbar from './components/common/Navbar';
-// import NotFound from './components/NotFound';
 
 const App = () => {
   return (
