@@ -10,9 +10,11 @@ dotenv.config();
 const {dbConnection, sequelize} = require('./config/db'); 
 const keys = require("./config/keys");
 const routes = require("./routes");
-
+const path = require("path");
 const server = express();
 server.use(bodyParser.json());
+
+server.use(express.static(path.join(__dirname, 'dist')));
 
 dbConnection(); // connect to database
 
@@ -22,7 +24,7 @@ const limiter = rateLimit({
 	standardHeaders: true,
 	legacyHeaders: false,
 })
-let whitelist = ["*", "http://localhost:3001"]
+let whitelist = ["*", "http://localhost:3001", "http://localhost:3000"]
 let corsOptions = {
   origin: function (origin, callback) {
     if (origin && whitelist.includes(origin)) {
@@ -35,7 +37,7 @@ let corsOptions = {
 
 // Security middlewares
 server.use(limiter); 
-server.use(cors(corsOptions));
+server.use(cors("*"));
 server.use(helmet());
 
 server.locals.sequelize = sequelize;
@@ -51,6 +53,11 @@ sequelize.sync()
 
 server.use('/', routes); // routes entry point
 server.use(errorHandler.errorHandlerMiddleware); // error middleware
+
+//build mode
+server.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname + '/dist/index.html'));
+});
 
 
 server.listen(keys.port, () => {

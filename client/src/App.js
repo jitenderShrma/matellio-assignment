@@ -3,11 +3,10 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import store from './store/store';
 import PrivateRoute from './components/PrivateRoute';
-import PersonalInfoForm from './components/PersonalInfoComponent';
+import PersonalDetailsComponent from './components/profileDetails/MainForm';
 import HomeComponent from './components/Home';
 import Navbar from './components/common/Navbar';
-import NotFound from './components/NotFound';
-// import LoginComponent from './components/auth/LoginComponent';
+// import NotFound from './components/NotFound';
 
 const App = () => {
   return (
@@ -18,7 +17,7 @@ const App = () => {
           <Route path="/" element={<HomeComponent/>} />
 
           {/* Private routes */}
-          <Route path="/personal-info" element={<PrivateRoute> <PersonalInfoForm /> </PrivateRoute>} />
+          <Route path="/personal-info" element={<PrivateRoute> <PersonalDetailsComponent /> </PrivateRoute>} />
         </Routes>
       </Router>
     </Provider>

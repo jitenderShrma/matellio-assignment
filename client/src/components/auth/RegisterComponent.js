@@ -23,7 +23,7 @@ const Register = ({ show, handleClose }) => {
       setFlash({ showMessage: true, message: 'Successfully registered', type: 'success' });
       handleClose();
     } else {
-      setFlash({ showMessage: true, message: result.message, type: 'danger' });
+      setFlash({ showMessage: true, message: result.message && typeof result.message === 'string' ? result.message : 'Some Error', type: 'danger' });
     }
   };
 
