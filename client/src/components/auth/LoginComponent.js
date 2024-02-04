@@ -20,11 +20,17 @@ const Login = ({ show, handleClose }) => {
   };
 
   const handleSaveChanges = async () => {
-    const result = await login(dispatch, { email, password });
-    if (result.status === 'success') {
+    try {
+      const result = await login(dispatch, { email, password });
+    if (result && result.status === 'success') {
       handleClose();
     } else {
-      setFlash({showMessage:true, message:result.message, type:'danger'});
+      setFlash({
+        showMessage:true,
+         message: result.message && typeof result.message === 'string' ? result.message : 'Some Error', type:'danger'});
+    }
+    } catch (_) {
+      setFlash({showMessage:true, message:'Server Error', type:'danger'});
     }
   };
 

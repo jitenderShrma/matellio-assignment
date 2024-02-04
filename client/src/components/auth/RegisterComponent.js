@@ -18,13 +18,18 @@ const Register = ({ show, handleClose }) => {
     setPassword(e.target.value);
   };
   const handleSaveChanges = async () => {
-    const result = await register(dispatch, { email, password });
-    if (result.status === 'success') {
-      setFlash({ showMessage: true, message: 'Successfully registered', type: 'success' });
-      handleClose();
-    } else {
-      setFlash({ showMessage: true, message: result.message && typeof result.message === 'string' ? result.message : 'Some Error', type: 'danger' });
+    try {
+      const result = await register(dispatch, { email, password });
+      if (result && result.status === 'success') {
+        setFlash({ showMessage: true, message: 'Successfully registered', type: 'success' });
+        handleClose();
+      } else {
+        setFlash({ showMessage: true, message: result.message && typeof result.message === 'string' ? result.message : 'Some Error', type: 'danger' });
+      }
+    } catch (error) {
+      setFlash({ showMessage: true, message: 'Server Error', type: 'danger' });
     }
+
   };
 
   return (
@@ -34,15 +39,15 @@ const Register = ({ show, handleClose }) => {
           <Modal.Title>Register</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-        {flash.showMessage && (
-        <FlashMessage
-          message={flash.message}
-          variant={flash.type}
-          onClose={() => {
-            setFlash({ showMessage: false, type: '', message: '' })
-          }}
-        />
-      )}
+          {flash.showMessage && (
+            <FlashMessage
+              message={flash.message}
+              variant={flash.type}
+              onClose={() => {
+                setFlash({ showMessage: false, type: '', message: '' })
+              }}
+            />
+          )}
           <Form>
             <Form.Group controlId="formBasicEmail">
               <Form.Label>Email address</Form.Label>
@@ -73,7 +78,7 @@ const Register = ({ show, handleClose }) => {
             Submit
           </Button>
         </Modal.Footer>
-       
+
       </Modal>
     </>
   );

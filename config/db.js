@@ -1,14 +1,5 @@
 const keys = require("./keys");
 const { Sequelize } = require('sequelize');
-
-// const sequelize = new Sequelize({
-//     dialect: keys.dbDialect,
-//     username: keys.dbUsername,
-//     password: keys.dbPassword,
-//     database: keys.dbName,
-//     host: keys.dbHost,
-//     port: keys.dbPort
-// });
 const sequelize = new Sequelize(keys.dbURI, {
     dialect: 'postgres',
     logging: false, 

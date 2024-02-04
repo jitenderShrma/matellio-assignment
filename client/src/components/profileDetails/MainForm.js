@@ -130,13 +130,16 @@ const MainForm = () => {
         country: address.country,
       })),
     };
-    const result = await submitPersonalInfo(formData);
-    if (result.status === 'success') {
-      setFlash({ showMessage: true, message: 'Successfully submitted', type: 'success' });
-      //   handleClose();
-      setSubmitted(true);
-    } else {
-      setFlash({ showMessage: true, message: result.message, type: 'danger' });
+    try {
+      const result = await submitPersonalInfo(formData);
+      if (result.status === 'success') {
+        setFlash({ showMessage: true, message: 'Successfully submitted', type: 'success' });
+        setSubmitted(true);
+      } else {
+        setFlash({ showMessage: true, message: result.message, type: 'danger' });
+      }
+    } catch (error) {
+      setFlash({ showMessage: true, message: 'Server Error', type: 'danger' });
     }
   };
   const handleAddAddress = () => {
