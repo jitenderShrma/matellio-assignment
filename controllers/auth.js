@@ -1,10 +1,24 @@
-const {User} = require('../models');
+const { User } = require('../models');
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const keys = require("../config/keys");
 const { ErrorHandler } = require('../middlewares/errorHandler');
 const { loginOrRegisterValidator } = require("../validations/userValidation");
 
+
+const generateJwt = async (user) => {
+    const accessToken = await jwt.sign(
+        { id: user.id },
+        keys.secret,
+        { expiresIn: keys.jwtAccessTokenExpiration }
+    );
+    const refreshToken = await jwt.sign(
+        { id: user.id },
+        keys.secret,
+        { expiresIn: keys.jwtRefreshTokenExpiration }
+    );
+    return { accessToken, refreshToken }
+}
 
 // @desc  to login
 // @route  POST /api/v1/auth/login
@@ -28,15 +42,18 @@ exports.login = async (req, res, next) => {
         if (!isMatch) {
             throw new ErrorHandler(401, 'Invalid email or password');
         }
-        const token = jwt.sign(
-            { id: user.id },
-            keys.secret,
-            { expiresIn: keys.jwtExpireInNumberOfDays }
-        ); // generate jwt
+        const { accessToken, refreshToken } = await generateJwt(user);
+        // save refreshToken to DB
+        await User.update(
+            { refreshToken },
+            {
+                where: { id: user.id },
+            });
         return res.status(200).json({
-            status:'success',
+            status: 'success',
             message: 'Login successfully',
-            token,
+            accessToken,
+            refreshToken,
             user: {
                 id: user.id,
                 email: user.email
@@ -60,9 +77,10 @@ exports.register = async (req, res, next) => {
             throw new ErrorHandler(400, error);
         }
         // check user with already exist
-        const existingUser = await User.findOne({
+        let existingUser = await User.findOne({
             where: { email: req.body.email },
         });
+        existingUser && (existingUser = existingUser.toJSON());
         if (existingUser) {
             throw new ErrorHandler(409, 'User already exist with the email');
         }
@@ -74,9 +92,49 @@ exports.register = async (req, res, next) => {
             email: req.body.email,
             password: hashedPassword,
         });
-        res.status(201).send({ status:'success', message: 'User created successfully.' });
+        res.status(201).send({ status: 'success', message: 'User created successfully.' });
     } catch (error) {
         next(error);
     }
 
+}
+
+// @desc  Refresh access token
+// @route  POST /api/v1/auth/refresh-token
+// @access  public
+exports.getAccessToken = async (req, res, next) => {
+    try {
+        if (!req.body.refreshToken) {
+            throw new ErrorHandler(400, 'Refresh token is required');
+        }
+
+        // Verify the refresh token's expiration
+        const decoded = jwt.verify(req.body.refreshToken, keys.secret);
+        if (!decoded || (decoded.exp < Date.now() / 1000)) {
+            throw new ErrorHandler(401, 'Refresh token has expired');
+        }
+        // Find user by refresh token
+        const user = await User.findOne({
+            where: {
+                refreshToken: req.body.refreshToken
+            }
+        });
+        if (!user) {
+            throw new ErrorHandler(401, 'Invalid refresh token');
+        }
+
+        const { accessToken, refreshToken:newRefreshToken } = await generateJwt(user);
+        await User.update(
+            { refreshToken:newRefreshToken },
+            {
+                where: { id: user.id },
+            });
+        res.status(200).json({
+            status: 'success',
+            refreshToken:newRefreshToken,
+            accessToken
+        });
+    } catch (error) {
+        next(error);
+    }
 }

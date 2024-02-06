@@ -1,0 +1,25 @@
+{
+  "development": {
+    "username": "vakyxqzh",
+    "password": "5r6wo3bmNEtVKGUWxie0-_9HpYcafVbl",
+    "database": "vakyxqzh",
+    "host": "arjuna.db.elephantsql.com",
+    "port": 5432,
+    "dialect": "postgres"
+  },
+  "test": {
+    "username": "myuser",
+    "password": "mypassword",
+    "database": "mydatabase",
+    "host": "127.0.0.1",
+    "dialect": "postgres",
+    "port": 54320
+  },
+  "production": {
+    "username": "root",
+    "password": null,
+    "database": "database_production",
+    "host": "127.0.0.1",
+    "dialect": "postgres"
+  }
+}

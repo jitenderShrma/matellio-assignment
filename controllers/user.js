@@ -67,7 +67,7 @@ exports.getUserInfo = async (req, res, next) => {
         if (!user) {    
           throw new ErrorHandler(400, 'User not found' );
         }
-        return res.status(200).json({ status:'success', user });
+        return res.status(200).json({ status:'success', user:user.toJSON() });
       } catch (error) {
         next(error);
       }

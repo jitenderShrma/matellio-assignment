@@ -4,7 +4,6 @@ import { Form, Button, Row, Col } from 'react-bootstrap';
 
 
 const AddressForm = ({addresses, setAddresses, submitted, addressValidationErrors, setAddressValidationErrors}) => {
-
     const handleAddressChange = (index, field, value) => {
         setAddresses((prevAddresses) => {
             const newAddresses = [...prevAddresses];

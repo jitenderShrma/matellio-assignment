@@ -1,6 +1,6 @@
 const keys = require("../config/keys");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const {User} = require("../models");
 const { ErrorHandler } = require('../middlewares/errorHandler');
 
 exports.authentication = async (req, _, next) => {
@@ -16,7 +16,12 @@ exports.authentication = async (req, _, next) => {
         if (!decode) {
             throw new ErrorHandler(401, 'Unauthorize');
         }
-        const user = await User.findOne({
+        // Check if token is expired
+        if (decode.exp < Date.now() / 1000) {
+            throw new ErrorHandler(403, 'Token expired');
+        }
+
+        let user = await User.findOne({
             where: {
                 id: decode.id,
             },
@@ -24,7 +29,7 @@ exports.authentication = async (req, _, next) => {
         if (!user) {
             throw new ErrorHandler(401, 'Unauthorize');
         }
-        req.user = user;
+        req.user = user.dataValues;
         next();
     } catch (error) {
         return next(error);

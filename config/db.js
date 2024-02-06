@@ -6,7 +6,6 @@ const sequelize = new Sequelize(keys.dbURI, {
 })
 
 const dbConnection = async () => {
-    
     try {
         await sequelize.authenticate();
         console.log("DB connected...");

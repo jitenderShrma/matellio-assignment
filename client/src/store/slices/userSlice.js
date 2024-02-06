@@ -2,11 +2,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const user = JSON.parse(localStorage.getItem('user'));
-const token = localStorage.getItem('token');
+const accessToken = localStorage.getItem('accessToken');
 const initialState = {
-    authenticated: user && token ? true : false,
-    token: token,
-    user:token || {}, 
+    authenticated: user && accessToken ? true : false,
+    accessToken: accessToken,
+    user:accessToken || {}, 
 };
 
 const userSlice = createSlice({
@@ -15,25 +15,14 @@ const userSlice = createSlice({
     reducers: {
         setLoggedIn: (state, action) => {
             state.authenticated = true;
-            state.token = action.payload.token;
+            state.accessToken = action.payload.accessToken;
             state.user = action.payload.user;
         },
-        // setAuthenticated: (state, action) => {
-        //     state.authenticated = action.payload;
-        // },
-        // setToken: (state, action) => {
-        //     state.token = action.payload;
-        // },
         setLogout: (state) => {
             state.authenticated = false;
-            state.token = null;
+            state.accessToken = null;
             state.user = {};
         },
-        // addAddress: (state, action) => {
-        //     state.addresses.push(action.payload);
-        // },
-        // setPersonalInfo: (state, action) => {
-        // },
     },
 });
 

@@ -43,14 +43,6 @@ server.use(helmet());
 server.locals.sequelize = sequelize;
 server.locals.Op = Op;
 
-sequelize.sync()
-  .then(() => {
-    console.log('Database synchronized.');
-  })
-  .catch((err) => {
-    console.error('Error synchronizing database:', err);
-  });
-
 server.use('/', routes); // routes entry point
 server.use(errorHandler.errorHandlerMiddleware); // error middleware
 
