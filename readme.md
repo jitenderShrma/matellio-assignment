@@ -2,7 +2,7 @@
 
 ## Project Functionality
 This project allows users to perform the following actions:
-- Login ``
+- Login
 - Register
 - Submit personal details
 
