@@ -4,7 +4,7 @@
 This project allows users to perform the following actions:
 - Login
 - Register
-- Submit personal details - ...
+- Submit personal details - ....
 
 ## Project Setup
 
